@@ -1,0 +1,70 @@
+import 'dart:convert' as convert;
+import 'package:http/http.dart' as http; 
+
+class Employee {
+    int id;
+    String username;
+    String name;
+    String email;
+    String gender;
+    String designation;
+    String phoneNumber;
+    String completeAddress;
+   
+    Employee({required this.id, 
+              required this.username, 
+              required this.name, 
+              required this.email, 
+              required this.gender, 
+              required this.designation, 
+              required this.phoneNumber, 
+              required this.completeAddress});
+  
+    factory Employee.fromJson(Map<String, dynamic> data){
+      return Employee(
+        id: data['id'],
+        username: data['username'],
+        name: data['name'],
+        email: data['email'],
+        gender: data['gender'],
+        designation: data['designation'],
+        phoneNumber: data['phone_number'],
+        completeAddress: data['complete_address']
+      );
+    }
+}
+
+void main(List<String> arguments) async {
+  
+  // Criando uma variável para URL
+  final url = Uri.https(
+    'api.onlinewebtutorblog.com',
+    '/employees',
+  );
+  
+  // Chamando o endpoint (GET)
+  final response = await http.get(url);
+  
+  // Verificando e tratando a resposta do JSON
+  if (response.statusCode == 200) {
+    // print(response.body);
+    final jsonResponse = convert.jsonDecode(response.body);
+    final dataResponse = jsonResponse['data'];
+    //print(dataResponse);
+    
+    var employees = dataResponse.map((data) => Employee.fromJson(data));
+    
+    for (var data in employees){
+      print('id: ${data.id}');
+      print('username: ${data.username}');
+      print('name: ${data.name}');
+      print('email: ${data.email}');
+      print('designation: ${data.designation}');
+      print('phone_number: ${data.phoneNumber}');
+      print('complete_address: ${data.completeAddress}');
+      print('');
+    }
+  } else {
+    print('Request failed with status: ${response.statusCode}.');
+  }
+}
